@@ -1,0 +1,170 @@
+{
+  dbVehicleType: [
+  '{{repeat(5)}}',
+  {
+    Code: 'VEH{{index() + 1}}00',
+    Capacity:'{{integer(2,10)}}00',
+    Range:'{{random(100,200,350)}}'
+  }
+], 
+    dbDepot: [
+      '{{repeat(3)}}',
+      {
+        Code:'DEP{{index() + 1}}00',
+        Location:'{{floating(-90.000001, 90)}}, {{floating(-180.000001, 180)}}',
+        dbRoute:  [
+        '{{repeat(5)}}',
+          {
+            DepotCode: '',
+            RouteCode: 'RT{{index()+1}}00',
+            Distance: '{{integer(7, 12)}}0'
+          }
+        ],
+        fnRouteDepot: function (tags, index) {
+            for (var i = 0; i < this.dbRoute.length; i++) {
+              this.dbRoute[i].DepotCode = this.Code;
+            }
+            return null;
+        },
+        dbDriver: [
+        '{{repeat(integer(3,6))}}',
+        {
+          DepotCode: '',
+          Code:'DRV{{index() + 1}}00',
+          Name:'{{firstName()}} {{surname()}}',
+          ShiftStart:'',
+          dbDelivery: [
+            '{{repeat(integer(1,4))}}',
+            {
+              Code: '{{objectId()}}',
+              DepotCode: '',
+              RouteCode:'',
+              DriverCode: '',
+              VehicleCode: 'VEH{{integer(1,5)}}00',
+              StartTime: '{{date(new Date(2014, 6, 1), new Date(2014, 10, 31), "YYYY-MM-ddThh:mm:ssZ")}}',
+              EndTime: function(tags, index) {
+                  var start = new Date(this.StartTime);
+                  var end = new Date(start);
+                  end.setDate(end.getDate() + 0.75);
+                  
+                  return tags.date(
+                    end,
+                    end,
+                    "YYYY-MM-ddThh:mm:ssZ");
+              }
+            }
+          ]
+        }
+        ],
+        fnDeliveryUpdate: function(tags, index) {
+          var depot = this;
+            //placeholder property for fuction execution
+            for (var i = 0; i < depot.dbDriver.length; i++) {
+              var driver = depot.dbDriver[i];
+              driver.DepotCode = depot.Code;
+              
+              for (var i2 = 0; i2 < driver.dbDelivery.length; i2++) {
+                driver.dbDelivery[i2].RouteCode = depot.dbRoute[tags.integer(0, depot.dbRoute.length - 1)].RouteCode;
+                driver.dbDelivery[i2].DepotCode = depot.Code;
+                driver.dbDelivery[i2].DriverCode = driver.Code;
+              }              
+            }
+            return null;
+          }        
+      }
+      ],
+ 
+      dbCustomerDetail: [
+        '{{repeat(5)}}',
+        {
+          CustNum: '{{index() + 1}}000',
+          Name: '{{firstName()}} {{surname()}}',
+          ContactNumber: '+1 {{phone()}}',
+          Location: '{{floating(-90.000001, 90)}}, {{floating(-180.000001, 180)}}',
+          dbOrder: [
+            '{{repeat(integer(1,4))}}',
+            {
+              Code: '{{objectId()}}',
+              CustNum: '',
+              OrderNum:'{{index() + 1}}',
+            OrderDate: '{{date(new Date(2014, 0, 1), new Date(), "YYYY-MM-ddThh:mm:ssZ")}}',
+            OrderAmt:  '{{floating(10, 1000, 2)}}',              
+            OrderStatus: '{{random("Ordered","Delivered","ReturnRequested","ReturnApproved","ReturnDenied","ReturnReceived","Refunded")}}',
+              dbOrderLine: [
+            '{{repeat(integer(1,3))}}',
+            {              
+              OrderCode: '',
+              LineNum: '{{index()+1}}',
+              ItemCode: '{{random("BOOK", "CD", "TABLET", "PHONE", "SHOE", "FOOD")}}{{integer(1,6)}}00',
+              Qty: '{{integer(1,3)}}'
+            }
+              ]
+        }
+         ],
+          fnCustNum: function (tags, index) {
+            //placeholder property for fuction execution
+            for (var i = 0; i < this.dbOrder.length; i++) {              
+              var order = this.dbOrder[i];
+              order.CustNum = this.CustNum;
+              
+              switch (order.OrderStatus) {
+                  case "ReturnApproved":                  
+                  case "ReturnReceived":
+                  case "Refunded":
+                    order.ReturnCode = 'RMA-' + order.CustNum + '-' + order.OrderNum;
+                    order.ReturnReason = tags.lorem();
+                    break;
+              }
+              
+              for (var i2 = 0; i2 < order.dbOrderLine.length; i2++) {
+                order.dbOrderLine[i2].OrderCode = order.Code;
+              }
+              
+            }
+            return null;            
+        }
+        }
+      ],        
+      dbDeliveryItem: function(tags, index) {
+        var delOrders = [];
+        
+        for (var i = 0; i < this.dbCustomerDetail.length; i++) {
+            for (var i2 = 0; i2 < this.dbCustomerDetail[i].dbOrder.length; i2++) {              
+                var order = this.dbCustomerDetail[i].dbOrder[i2];
+              
+                // get a random driver delivery for the order              
+                var depot = this.dbDepot[tags.integer(0, this.dbDepot.length - 1)];
+                var driver = depot.dbDriver[tags.integer(0, depot.dbDriver.length - 1)];
+                var delivery = driver.dbDelivery[tags.integer(0, driver.dbDelivery.length - 1)];
+              
+                var delItem = {};
+              
+                delOrders.push(delItem);
+                if (!delivery) {alert(driver.Code);}
+              
+                delItem.DeliveryCode = delivery.Code;
+                delItem.OrderCode = order.Code;
+                delItem.DeliveryStatus = order.OrderStatus;
+                delItem.DeliveredAt = null;
+                delItem.Comments = null;
+                delItem.ProofOfDelivery = null;
+              
+              switch (order.OrderStatus) {
+                  case "ReturnApproved":
+                  case "ReturnDenied":
+                  case "ReturnReceieved":
+                  case "Refunded":
+                  case "Delivered":
+                  case "ReturnRequested":
+                  
+                  
+                  
+                    delItem.DeliveredAt = tags.date(new Date(delivery.StartTime), new Date(delivery.EndTime), "YYYY-MM-ddThh:mm:ssZ");
+                  
+                  delItem.ProofOfDelivery = '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';
+                } 
+            }
+        }
+        return delOrders;
+      }
+}
