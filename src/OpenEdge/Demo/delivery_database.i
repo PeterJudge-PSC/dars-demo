@@ -5,7 +5,7 @@
     Created     : Tue Aug 05 11:30:04 EDT 2014
     Notes       :
   ----------------------------------------------------------------------*/
-define temp-table dbCustomerDetail no-undo
+define static protected temp-table CustomerDetail no-undo
     field CustNum       as integer
     field Name          as character
     field ContactNumber as character
@@ -13,7 +13,7 @@ define temp-table dbCustomerDetail no-undo
     /* other real-world fields */
     index idx1 as primary unique CustNum. 
 
-define temp-table dbOrder no-undo
+define static protected temp-table Order no-undo
     field Code            as character
     field CustNum         as integer
     field OrderNum        as integer
@@ -23,50 +23,52 @@ define temp-table dbOrder no-undo
     field OrderStatus     as character      /* matches OrderStatusEnum */
     field ReturnCode      as character
     field ReturnReason    as character
+    field DeliveryCode    as character
     /* other real-world fields */
     index idx1 as primary unique Code
     index idx2 as unique CustNum OrderNum
     index idx3 OrderStatus
+    index idx4 ReturnCode
     .
-        
-define temp-table dbOrderLine no-undo
+
+define static protected temp-table OrderLine no-undo
     field OrderCode       as character
     field LineNum         as integer
     field ItemCode        as character
     field Qty             as integer
+    field Volume          as decimal decimals 1
     /* other real-world fields */
     index idx1 as primary unique OrderCode LineNum.
 
-define temp-table dbDepot no-undo
+define static protected temp-table Depot no-undo
     field Code     as character
     field Location as character     /* lat, long */
     index idx1 as primary unique Code. 
 
-define temp-table dbDriver no-undo
+define static protected temp-table Driver no-undo
     field DepotCode  as character
     field Code as character
     field Name as character
     field ShiftStart as datetime-tz
-    field DeviceId   as character         /* for notifications */
     /* other real-world fields */
     index idx1 as primary unique DepotCode Code
     index idx2                   ShiftStart
     .        
 
-define temp-table dbVehicleType no-undo
+define static protected temp-table VehicleType no-undo
     field Code     as character
     field Capacity as decimal      /* cubic meters */
     field Range    as integer      /* KM */
     .        
 
-define temp-table dbRoute no-undo
+define static protected temp-table Route no-undo
     field DepotCode     as character
     field RouteCode       as character
     field Distance      as decimal
     index idx1 as primary unique DepotCode RouteCode
     .
 
-define temp-table dbDelivery no-undo
+define static protected temp-table Delivery no-undo
     field Code          as character
     field DepotCode     as character
     field RouteCode     as character
@@ -80,25 +82,24 @@ define temp-table dbDelivery no-undo
     index idx3 as unique DepotCode DriverCode RouteCode VehicleCode StartTime EndTime
     .
     
-define temp-table dbDeliveryItem no-undo
+define static protected temp-table DeliveryItem no-undo
+    field Code as character
     field DeliveryCode as character
     field OrderCode as character
     field DeliveryStatus as character
     field DeliveredAt as datetime-tz
     field Comments as character
     field ProofOfDelivery as clob
-    index idx1 as primary unique DeliveryCode OrderCode.
-
-define dataset dsDatabase for dbVehicleType, 
-                              dbDepot, dbRoute, dbDriver, dbDelivery, 
-                              dbDeliveryItem,
-                              dbCustomerDetail, dbOrder , dbOrderLine
-    data-relation for dbDepot, dbDriver relation-fields(Code, DepotCode) nested
-    data-relation for dbDepot, dbRoute relation-fields(Code, DepotCode) nested
-    data-relation for dbDriver, dbDelivery relation-fields(DepotCode, DepotCode, Code, DriverCode) nested
-    data-relation for dbCustomerDetail, dbOrder relation-fields(CustNum, CustNum) nested
-    data-relation for dbOrder,dbOrderLine relation-fields(Code, OrderCode) nested
+    index idx1 as primary unique Code
+    index idx2 as unique DeliveryCode OrderCode.
+    
+define static protected dataset dsDatabase for VehicleType, 
+                              Depot, Route, Driver, Delivery, 
+                              DeliveryItem,
+                              CustomerDetail, Order , OrderLine
+    data-relation for Depot, Driver relation-fields(Code, DepotCode) nested
+    data-relation for Depot, Route relation-fields(Code, DepotCode) nested
+    data-relation for Driver, Delivery relation-fields(DepotCode, DepotCode, Code, DriverCode) nested
+    data-relation for CustomerDetail, Order relation-fields(CustNum, CustNum) nested
+    data-relation for Order,OrderLine relation-fields(Code, OrderCode) nested
     .
-
-
-/* eof */

@@ -9,104 +9,69 @@
  ----------------------------------------------------------------------*/
 block-level on error undo, throw.
 
-using OpenEdge.Demo.BusinessEntity.
+using OpenEdge.Demo.DeliveryEntity.
+using OpenEdge.Demo.LocationService.
+using OpenEdge.Demo.OrderEntity.
+using OpenEdge.Demo.OrderStatusEnum.
+using OpenEdge.Mobile.PushNotificationFilterOperandEnum.
+using OpenEdge.Mobile.PushNotificationMessageBuilder.
+using OpenEdge.Mobile.PushNotificationService.
+using OpenEdge.Net.URI.
 using Progress.Json.ObjectModel.JsonArray.
 using Progress.Json.ObjectModel.JsonObject.
+using Progress.Json.ObjectModel.ObjectModelParser.
 using Progress.Lang.AppError.
 using Progress.Lang.Error.
-using OpenEdge.Demo.OrderStatusEnum.
+using OpenEdge.Core.Assert.
 
-class OpenEdge.Demo.DeliveryAndReturnService inherits BusinessEntity:
-    /* 'database' schema and holder */
-    {OpenEdge/Demo/delivery_database.i}
+class OpenEdge.Demo.DeliveryAndReturnService:
+    {OpenEdge/Demo/delivery_dataset.i}
+    {OpenEdge/Demo/order_dataset.i}
     
-    define temp-table eVehicleType no-undo like dbVehicleType.
-    define temp-table eDepot no-undo like dbDepot.
-    define temp-table eDriver no-undo like dbDriver.
-    define temp-table eRoute no-undo like dbRoute.
-    define temp-table eDelivery no-undo like dbDelivery.
-    define temp-table eDeliveryItem no-undo like dbDeliveryItem.
-    define temp-table eCustomerDetail no-undo like dbCustomerDetail.
-    define temp-table eOrder no-undo like dbOrder.
-    define temp-table eOrderLine no-undo like dbOrderLine.
+    define private variable moNotificationService as PushNotificationService no-undo.
+    define private variable moDeliveryEntity as DeliveryEntity no-undo.
+    define private variable moOrderEntity as OrderEntity no-undo.
+    define private variable moLocationService as LocationService no-undo.
     
-    define dataset dsDriverDelivery for eDelivery, eDeliveryItem, eOrder, eOrderLine, eCustomerDetail
-        data-relation for eDelivery, eDeliveryItem relation-fields(Code, DeliveryCode)
-        data-relation for eDeliveryItem, eOrder relation-fields(OrderCode, Code) 
-        data-relation for eOrder, eOrderLine relation-fields(Code, OrderCode)
-        data-relation for eOrder, eCustomerDetail relation-fields(CustNum, CustNum)
-        .
-    
-    define data-source srcVehicle for dbVehicleType.
-    define data-source srcDepot for dbDepot.
-    define data-source srcDriver for dbDriver.
-    define data-source srcRoute for dbRoute.
-    define data-source srcDelivery for dbDelivery.
-    define data-source srcDelItem for dbDeliveryItem.
-    define data-source srcCustomer for dbCustomerDetail.
-    define data-source srcOrder for dbOrder.
-    define data-source srcOLine for dbOrderLine.
-
-	constructor public DeliveryAndReturnService ():
-		super(dataset dsDriverDelivery:handle).
+	constructor public DeliveryAndReturnService():
+		super().
+		
+		assign moDeliveryEntity = new DeliveryEntity()
+		       moOrderEntity    = new OrderEntity()
+		       moLocationService = new LocationService().
+        
+        this-object:Initialize().
 	end constructor.
-
-	method override public void Destroy():
-	    /* persist the data */
-	    dataset dsDatabase:write-json('file', 'db/data-after.json', true).
+	
+	method public void Destroy():
+        moDeliveryEntity:Destroy().
+        moOrderEntity:Destroy().
 	end method.
 	
-    method override public void Initialize():
-        assign extent(this-object:ProDataSource) = 5
-               
-               this-object:ProDataSource[1] = data-source srcDelivery:handle
-               this-object:ProDataSource[2] = data-source srcDelItem:handle
-               this-object:ProDataSource[3] = data-source srcOrder:handle
-               this-object:ProDataSource[4] = data-source srcOLine:handle
-               this-object:ProDataSource[5] = data-source srcCustomer:handle
-               . 
+    method public void Initialize():
+        define variable oConfig as JsonObject no-undo.
+        define variable oParser as ObjectModelParser no-undo.
         
-        /* LOAD Data */
-        dataset dsDatabase:read-json('file', 'db/data.json').
+        assign oParser = new ObjectModelParser()
+               oConfig = cast(oParser:ParseFile('cfg/config.json'), JsonObject)
+               oConfig = oConfig:GetJsonObject('notificationService').
         
-        /* set time-sensitive stuff (start/end times */
-
-        /* debug */        
-        dataset dsDatabase:write-json('file', 'temp/dump.json', yes).
+        assign moNotificationService = PushNotificationService:Instance(
+                                        URI:Parse(oConfig:GetCharacter('URL')),
+                                        oConfig:GetCharacter('apiKey')).
     end method.
-
+    
     /* READ */
     method public void ListDriverDeliveries(input filter as character, 
                                             output dataset dsDriverDelivery):
-        define variable cDriverCode as character no-undo.
-        define variable cDepotCode  as character no-undo.
-        define variable cDeliveryCode as character no-undo.
-        define variable cRouteCode as character no-undo.
-        define variable cDeliveryWhere as character no-undo.
-        
-        define variable oFilter as JsonObject no-undo.
-                
-        /* filter: 
-                { "driverCode":"", "depotCode":"", "deliveryCode":"" } */
-                
-        assign oFilter     = ParseFilter(filter)
-               cDriverCode = oFilter:GetCharacter('driverCode')
-               cDepotCode  = oFilter:GetCharacter('depotCode')
-               .
-        if oFilter:Has('deliveryCode') then
-            assign cDeliveryCode = oFilter:GetCharacter('deliveryCode')
-                   cDeliveryWhere = 'where dbDelivery.Code eq ' + quoter(cDeliveryCode)
-                   .
-        else
-            assign cDeliveryWhere = 'where dbDelivery.DriverCode eq ' + quoter(cDriverCode) + ' and '
-                                  + '      dbDelivery.DepotCode eq ' + quoter(cDepotCode) + ' and '
-                                  + '      dbDelivery.EndTime eq ? '.
-        ReadData(cDeliveryWhere).
-    end method.    
+        moDeliveryEntity:ListDriverDeliveries(
+                                input filter,
+                                output dataset dsDriverDelivery by-reference).
+    end method.
     
     /* SUBMIT */
     method public void UpdateDriverDeliveries(input-output dataset dsDriverDelivery):
-        Submit(input-output dataset dsDriverDelivery by-reference).
+        moDeliveryEntity:UpdateDriverDeliveries(input-output dataset dsDriverDelivery by-reference).
     end method.
     
     /* INVOKE */
@@ -114,11 +79,11 @@ class OpenEdge.Demo.DeliveryAndReturnService inherits BusinessEntity:
                                      input  piOrderNum as integer,
                                      input  pcReason as character,
                                      output pcReturnStatus as longchar /* JSON */):
-        
         define variable oReturnStatus as JsonObject no-undo.
         define variable oMessages     as JsonArray  no-undo.
         define variable iMsgLoop      as integer    no-undo.
         define variable hRulesMessage as handle     no-undo.
+        define variable oFilter       as JsonObject no-undo.
                                                  
         /*
         pcReturnStatus = '~{ "status": "approved/pending/rejected/error", 
@@ -135,9 +100,11 @@ class OpenEdge.Demo.DeliveryAndReturnService inherits BusinessEntity:
         oReturnStatus:Add('error', false).
         
         /* find customer order */
-        ReadData(substitute('where dbOrder.OrderNum eq &1 and dbOrder.CustNum eq &2', 
-                                piOrderNum, piCustNum),
-                 buffer eOrder:handle).
+        oFilter = new JsonObject().
+        oFilter:Add('custNum', piCustNum).
+        oFilter:Add('orderNum', piOrderNum).
+        
+        moOrderEntity:ListOrders(oFilter, output dataset dsOrder by-reference).
         find first eOrder. /* should be only 1 */
         
         assign eOrder.OrderStatus = OrderStatusEnum:ReturnRequested:Name
@@ -147,7 +114,7 @@ class OpenEdge.Demo.DeliveryAndReturnService inherits BusinessEntity:
         oMessages:Read(hRulesMessage).
         */
         
-        if true then
+        if etime mod 2 eq 0 then
         do:
             assign eOrder.ReturnCode = substitute('RMA-&1-&2', eOrder.CustNum, eOrder.OrderNum) 
                    eOrder.OrderStatus = OrderStatusEnum:ReturnApproved:Name.
@@ -160,7 +127,7 @@ class OpenEdge.Demo.DeliveryAndReturnService inherits BusinessEntity:
         end.
         
         /* update DB */        
-        CommitData(row-modified).
+        moDeliveryEntity:UpdateDriverDeliveries(input-output dataset dsDriverDelivery by-reference).
         
         /* return info and messages */
         oReturnStatus:Set('status',     eOrder.OrderStatus).
@@ -193,97 +160,141 @@ class OpenEdge.Demo.DeliveryAndReturnService inherits BusinessEntity:
     end method.
     
     /* INVOKE */
-    method public character CreateDelivery(input pcDepot as character,
-                                           input pcDriver as character):
-        define variable dAvailableCapacity as decimal no-undo.
+    method public character CloseDelivery(input pcDeliveryCode as character):
+        define variable cFilterString as character no-undo.
+        define variable oFilter       as JsonObject no-undo.
+        
+        oFilter = new JsonObject().
+        oFilter:Add('deliveryCode', pcDeliveryCode).
+        oFilter:Write(output cFilterString).
+        
+        moDeliveryEntity:ListDriverDeliveries(
+                            cFilterString, 
+                            output dataset dsDriverDelivery by-reference).
+        
+        find eDelivery.
+        assign eDelivery.EndTime = now.
+        
+        moDeliveryEntity:UpdateDriverDeliveries(input-output dataset dsDriverDelivery by-reference).
+    end method.
+    
+    /* INVOKE */
+    method public character OpenDelivery(input pcDepot as character,
+                                         input pcDriver as character):
         define variable cRouteCode as character no-undo.
+        define variable oFilter as JsonObject no-undo.
+        define variable oArray as JsonArray no-undo.
+        define variable hVehicle as handle no-undo.
+        define variable hRoute as handle no-undo.
+        define variable dAvailableCapacity as decimal no-undo.
+        define variable dOrderVolume as decimal no-undo.
         
-        create dbDelivery.
-        assign dbDelivery.Code = guid
-               dbDelivery.DepotCode = pcDepot
-               dbDelivery.DriverCode = pcDriver
-               dbDelivery.VehicleCode = AllocateAvailableVehicle(pcDepot)
-               dbDelivery.StartTime = now
-               dbDelivery.EndTime = ?.
+        oFilter = new JsonObject().
+        oArray = new JsonArray().
+        oFilter:Add('orderStatus', oArray).
+        oArray:Add(OrderStatusEnum:Ordered:Name).
+        oArray:Add(OrderStatusEnum:ReturnApproved:Name).
         
-        find dbVehicleType where
-             dbVehicleType.Code eq dbDelivery.VehicleCode.
-        assign dAvailableCapacity = dbVehicleType.Capacity.
+        moOrderEntity:ListOrders(input  oFilter,
+                                 output dataset dsOrder by-reference).
         
-        for each dbOrder where
-                 dbOrder.OrderStatus eq OrderStatusEnum:Ordered:Name or
-                 dbOrder.OrderStatus eq OrderStatusEnum:ReturnApproved:Name
-                 no-lock,
-            first dbCustomerDetail where
-                  dbCustomerDetail.CustNum eq dbOrder.CustNum
+        moLocationService:AllocateAvailableVehicle(
+                                input  pcDepot, 
+                                output table-handle hVehicle by-reference).
+        
+        create eDelivery.
+        assign eDelivery.Code        = guid
+               eDelivery.DepotCode   = pcDepot
+               eDelivery.DriverCode  = pcDriver
+               eDelivery.VehicleCode = hVehicle::Code
+               eDelivery.StartTime   = now
+               eDelivery.EndTime     = ?
+               dAvailableCapacity    = hVehicle::Capacity.
+        
+        for each eOrder,
+            first eCustomerDetail where
+                  eCustomerDetail.CustNum eq eOrder.CustNum
                   no-lock:
             
-            /* cannot ship from this depot */
-            assign cRouteCode = FindRouteForLocation(pcDepot, dbCustomerDetail.Location).
-            
-            if cRouteCode eq '-1' then
+            /* can only ship from this depot */
+            moLocationService:FindRouteForLocation(
+                                input eCustomerDetail.Location,
+                                output table-handle hRoute by-reference).            
+            /* only deliveries for this depot considered */
+            if hRoute::DepotCode ne pcDepot then
                 next.
             
-            create dbDeliveryItem.
-            assign dbDeliveryItem.DeliveryCode = dbDelivery.Code
-                   dbDeliveryItem.OrderCode = dbOrder.Code
-                   dbDeliveryItem.DeliveryStatus = OrderStatusEnum:OutForDelivery:Name 
+            assign dOrderVolume = 0.
+            for each eOrderLine where
+                     eOrderLine.OrderCode eq eOrder.Code:
+                assign dOrderVolume = dOrderVolume
+                                    + eOrderLine.Volume.                         
+            end.
+            
+            /* truck can only take _so_ much ... */
+            if dAvailableCapacity - dOrderVolume lt 0 then
+                leave.
+                 
+            create eDeliveryItem.
+            assign eDeliveryItem.Code           = guid 
+                   eDeliveryItem.DeliveryCode   = eDelivery.Code
+                   eDeliveryItem.OrderCode      = eOrder.Code
+                   eDeliveryItem.DeliveryStatus = OrderStatusEnum:OutForDelivery:Name
+                   dAvailableCapacity           = dAvailableCapacity - dOrderVolume 
                    .
         end.
         
         /* this is likely to be some really complex logic. we just use 
            the last one (really just any route). 
            https://en.wikipedia.org/wiki/Vehicle_routing_problem */
-        assign dbDelivery.RouteCode = cRouteCode.
+        moLocationService:FindRouteForDelivery(
+                                        input  eDelivery.Code,
+                                        output table-handle hRoute by-reference).
+        /* only deliveries for this depot considered */
+        Assert:Equals(pcDepot, hRoute::DepotCode).
         
-        return dbDelivery.Code.
+        assign eDelivery.RouteCode = hRoute::RouteCode.
+        
+        moDeliveryEntity:UpdateDriverDeliveries(input-output dataset dsDriverDelivery by-reference).
+        
+        return eDelivery.Code.
     end method.
     
-    method private character FindRouteForLocation(input pcDepot as character,
-                                                  input pcLocation as character):
+    method public void NotifyDriver (input pcDepotCode as character,
+                                     input pcDriverCode as character,
+                                     input pcReturnCode as character):
+        define variable iNumReturns as integer no-undo.
+        define variable cMessage as character no-undo.
+        define variable oBuilder as PushNotificationMessageBuilder no-undo.
+        define variable cDriverCode as character no-undo.
+        define variable oFilter as JsonObject no-undo.
+        
+        
+        /* find a route for the customer. */
 
-        define query qryRoute for dbRoute scrolling.
-        
-        open query qryRoute preselect each dbRoute.
-        query qryRoute:reposition-to-row(random(1, query qryRoute:num-results)).
-        query qryRoute:get-next().
-        
-        return dbRoute.RouteCode.
-        
-        /**
-        define variable iMaxRange as integer no-undo.
-        define variable iCustomerDistance as integer no-undo.
-        
-        find dbDepot where dbDepot.Code eq pcDepot.
-        
-        for each dbVehicleType no-lock 
-                 by dbVehicleType.Range descending:
-            iMaxRange = dbVehicleType.Range.
-            leave.                      
-        end.
-        
-        /* geolocate  */
-        if true /*(dbDepot.Location + iMaxRange) ge MaxDistance(dbDepot.Location, pcLocation) */ then
-        do:
-            find first dbRoute where
-                       dbRoute.DepotCode eq pcDepot and
-                       dbRoute.Distance lt iCustomerDistance.
-             return dbRoute.RouteCode.
-        end.
-        else
-            /* ELSE unable to ship to customer from this depot */ . 
-            return '-1'.
-        **/            
-    end method.
+        /* find a driver that's on that route */
 
-    method private character AllocateAvailableVehicle(input pcDepot as character):
-        define query qryVehicle for dbVehicleType scrolling.
+        /**/
+        oFilter = new JsonObject().
+        oFilter:Add('driverCode', pcDriverCode).
+        oFilter:Add('depotCode', pcDepotCode).
         
-        open query qryVehicle preselect each dbVehicleType.
-        query qryVehicle:reposition-to-row(random(1, query qryVehicle:num-results)).
-        query qryVehicle:get-next().
+        moDeliveryEntity:ListDriverDeliveries(
+                    input  oFilter,
+                    output dataset dsDriverDelivery by-reference).
         
-        return dbVehicleType.Code.
+        /* send the notification */        
+        assign cMessage    = 'New pickup: ' + pcReturnCode 
+               iNumReturns = 1.
+               
+        oBuilder = PushNotificationMessageBuilder
+                    :Send(cMessage, iNumReturns)
+                    :AddStringFilter('depotCode', pcDepotCode,
+                                     PushNotificationFilterOperandEnum:Equals)
+                    :AddStringFilter('driverCode', cDriverCode,
+                                     PushNotificationFilterOperandEnum:Equals)
+                    .
+        
+        moNotificationService:SendNotification(oBuilder:Payload).                                         
     end method.
-    
 end class.
