@@ -1,0 +1,23 @@
+"53e25e100a474bba7333ccb3" "53e25e10a0010738db4a03de" "53e25e105ec27480c91ca664" "ReturnReceived" ? ? ?
+"53e25e1025dbf73e0513e7ba" "53e25e1052415b841be5c27f" "53e25e1033a226bf9f24c579" "ReturnDenied" 2014-09-16T23:29:46.000+04:00 ? "ProofOfDelivery!ISO8859-1!16760_1.blb"
+"53e25e102b304d702e368b4c" "53e25e1092357b3681758b0b" "53e25e102f2b7b748bff6681" "ReturnDenied" 2014-10-12T03:25:14.000+04:00 ? "ProofOfDelivery!ISO8859-1!16760_2.blb"
+"53e25e10779725956cab4e4d" "53e25e10942f65d0fb7bae4c" "53e25e10e4d2d2c47296f697" "ReturnReceived" ? ? ?
+"53e25e10901370a49dd99852" "53e25e10850f20bd6dacd476" "53e25e10b20516ebe0e0eb8b" "Delivered" 2014-07-20T04:26:07.000+04:00 ? "ProofOfDelivery!ISO8859-1!16760_3.blb"
+"53e25e10988e26705fc2eb48" "53e25e1002b73ff4435077fb" "53e25e100cf86f63f92b1432" "ReturnApproved" 2014-08-14T22:20:02.000+04:00 ? "ProofOfDelivery!ISO8859-1!16760_4.blb"
+"53e25e10a32993faa5cf36ce" "53e25e10d8aed9a855575c9c" "53e25e100d91062cef320662" "Ordered" ? ? ?
+"53e25e10a97e75e7a3ab067a" "53e25e10850f20bd6dacd476" "53e25e105e9e77eee61c5a48" "Refunded" 2014-07-20T07:48:00.000+04:00 ? "ProofOfDelivery!ISO8859-1!16760_5.blb"
+"53e25e10c3f5684ef32f784c" "53e25e10fd3095600b1d1e16" "53e25e1001943ed4344c1fb7" "ReturnRequested" 2014-09-16T22:10:55.000+04:00 ? "ProofOfDelivery!ISO8859-1!16760_6.blb"
+"53e25e10f37142c43e43d2a5" "53e25e10fd3095600b1d1e16" "53e25e10ea240e7aed50e0fc" "ReturnReceived" ? ? ?
+"53e25e10fbc3bfcc7341d6b6" "53e25e10bfbde6f9a4263e1d" "53e25e10d03fd8b185a0457d" "Ordered" ? ? ?
+.
+PSC
+filename=DeliveryItem
+records=0000000000011
+ldbname=dars
+timestamp=2014/09/17-15:19:37
+numformat=44,46
+dateformat=mdy-1950
+map=NO-MAP
+cpstream=UTF-8
+.
+0000001526

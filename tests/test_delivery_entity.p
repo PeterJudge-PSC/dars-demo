@@ -6,11 +6,13 @@
   ----------------------------------------------------------------------*/
 block-level on error undo, throw.
 
-using OpenEdge.Demo.DeliveryEntity.
+using TripleDee.Shopping.DeliveryEntity.
 using Progress.Json.ObjectModel.JsonObject.
+using Progress.Json.ObjectModel.JsonArray.
 
 /* ***************************  Main Block  *************************** */
 define variable oFilter as JsonObject no-undo.
+define variable oObject as JsonObject no-undo.
 define variable oBE as DeliveryEntity no-undo.
 define variable hDataset as handle no-undo.
 define variable cFilter as character no-undo.
@@ -27,7 +29,23 @@ oBE = new DeliveryEntity().
 oFilter = new JsonObject().
 oFilter:Add('driverCode', cDriver).
 oFilter:Add('depotCode', cDepot).
-oFilter:Write(output cFilter).
+oFilter:Add('deliveryStatus', new JsonArray()).
+oFilter:GetJsonArray('deliveryStatus'):Add('ReturnReceived').
+oFilter:GetJsonArray('deliveryStatus'):Add('Ordered').
+
+oObject = new JsonObject().
+oObject:Add('ablFilter', oFilter).
+
+/*oFilter:Write(output cFilter).*/
+
+define variable cWhere as character extent no-undo.
+
+cWhere = oBE:DBG_BuildQuery(oObject).
+
+message 
+'cWhere[1]=' cWhere[1] skip
+'cWhere[2]=' cWhere[2] skip
+view-as alert-box.
 
 oBE:ListDriverDeliveries(cFilter, output dataset-handle hDataset).
 

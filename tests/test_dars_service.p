@@ -15,7 +15,7 @@
 
 block-level on error undo, throw.
 
-using OpenEdge.Demo.DeliveryAndReturnService.
+using TripleDee.Shopping.DeliveryAndReturnService.
 using Progress.Json.ObjectModel.JsonObject.
 
 /* ***************************  Main Block  *************************** */
@@ -33,7 +33,6 @@ define variable cDelivery as character no-undo.
 
 cDepot = 'DEP100'.
 cDriver = 'DRV100'.
-/*cFilter = '~{}'.*/
 
 oDARS = new DeliveryAndReturnService().
 
@@ -46,7 +45,7 @@ cDelivery = oDARS:OpenDelivery(cDepot, cDriver).
 oFilter = new JsonObject().
 oFilter:Add('driverCode', cDriver).
 oFilter:Add('depotCode', cDepot).
-/*oFilter:Add('deliveryCode', cDelivery).*/
+oFilter:Add('deliveryCode', cDelivery).
 oFilter:Write(output cFilter).
 
 oDARS:ListDriverDeliveries(cFilter, output dataset-handle hDataset by-reference).

@@ -1,0 +1,27 @@
+{
+	"notificationService": 
+	{
+		"enabled": true,
+		"URL": "https://api.mobile.rollbase.com",
+		"apiKey": "1245fe75-6199-44d5-82d0-d340f5b73829"
+	},
+
+	"decisionService": 
+	{
+		"enabled": false,
+		"name": "ReturnApproval",
+		"version": null,
+		"RulesServer": 
+		{
+			"URL": "http://localhost:8980"
+		}
+	},
+
+	"bpmService": 
+	{
+		"enabled": false,
+		"serverURL": "SBMServerDC://localhost:18793",
+		"user": "admin",
+		"password": "admin"
+	}
+}

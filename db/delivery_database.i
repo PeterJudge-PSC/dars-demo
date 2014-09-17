@@ -5,15 +5,15 @@
     Created     : Tue Aug 05 11:30:04 EDT 2014
     Notes       :
   ----------------------------------------------------------------------*/
-define static protected temp-table CustomerDetail no-undo
+define  temp-table ttCustomerDetail no-undo
     field CustNum       as integer
     field Name          as character
     field ContactNumber as character
     field Location      as character
     /* other real-world fields */
-    index idx1 as primary unique CustNum. 
+    index idx1 as primary unique CustNum. w
 
-define static protected temp-table Order no-undo
+define  temp-table ttOrder no-undo
     field Code            as character
     field CustNum         as integer
     field OrderNum        as integer
@@ -31,7 +31,7 @@ define static protected temp-table Order no-undo
     index idx4 ReturnCode
     .
 
-define static protected temp-table OrderLine no-undo
+define  temp-table ttOrderLine no-undo
     field OrderCode       as character
     field LineNum         as integer
     field ItemCode        as character
@@ -40,12 +40,12 @@ define static protected temp-table OrderLine no-undo
     /* other real-world fields */
     index idx1 as primary unique OrderCode LineNum.
 
-define static protected temp-table Depot no-undo
+define  temp-table ttDepot no-undo
     field Code     as character
     field Location as character     /* lat, long */
     index idx1 as primary unique Code. 
 
-define static protected temp-table Driver no-undo
+define  temp-table ttDriver no-undo
     field DepotCode  as character
     field Code as character
     field Name as character
@@ -55,20 +55,20 @@ define static protected temp-table Driver no-undo
     index idx2                   ShiftStart
     .        
 
-define static protected temp-table VehicleType no-undo
+define  temp-table ttVehicleType no-undo
     field Code     as character
     field Capacity as decimal      /* cubic meters */
-    field Range    as integer      /* KM */
+    field Range    as decimal      /* KM */
     .        
 
-define static protected temp-table Route no-undo
+define  temp-table ttRoute no-undo
     field DepotCode     as character
-    field RouteCode       as character
+    field Code       as character
     field Distance      as decimal
-    index idx1 as primary unique DepotCode RouteCode
+    index idx1 as primary unique DepotCode Code
     .
 
-define static protected temp-table Delivery no-undo
+define  temp-table ttDelivery no-undo
     field Code          as character
     field DepotCode     as character
     field RouteCode     as character
@@ -82,7 +82,7 @@ define static protected temp-table Delivery no-undo
     index idx3 as unique DepotCode DriverCode RouteCode VehicleCode StartTime EndTime
     .
     
-define static protected temp-table DeliveryItem no-undo
+define  temp-table ttDeliveryItem no-undo
     field Code as character
     field DeliveryCode as character
     field OrderCode as character
@@ -93,13 +93,13 @@ define static protected temp-table DeliveryItem no-undo
     index idx1 as primary unique Code
     index idx2 as unique DeliveryCode OrderCode.
     
-define static protected dataset dsDatabase for VehicleType, 
-                              Depot, Route, Driver, Delivery, 
-                              DeliveryItem,
-                              CustomerDetail, Order , OrderLine
-    data-relation for Depot, Driver relation-fields(Code, DepotCode) nested
-    data-relation for Depot, Route relation-fields(Code, DepotCode) nested
-    data-relation for Driver, Delivery relation-fields(DepotCode, DepotCode, Code, DriverCode) nested
-    data-relation for CustomerDetail, Order relation-fields(CustNum, CustNum) nested
-    data-relation for Order,OrderLine relation-fields(Code, OrderCode) nested
+define  dataset dsDatabase for ttVehicleType, 
+                              ttDepot, ttRoute, ttDriver, ttDelivery, 
+                              ttDeliveryItem,
+                              ttCustomerDetail, ttOrder , ttOrderLine
+    data-relation for ttDepot, ttDriver relation-fields(Code, DepotCode) nested
+    data-relation for ttDepot, ttRoute relation-fields(Code, DepotCode) nested
+    data-relation for ttDriver, ttDelivery relation-fields(DepotCode, DepotCode, Code, DriverCode) nested
+    data-relation for ttCustomerDetail, ttOrder relation-fields(CustNum, CustNum) nested
+    data-relation for ttOrder,ttOrderLine relation-fields(Code, OrderCode) nested
     .

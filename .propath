@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<propath version="11.4ALPHA" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/propath.xsd">
+<propath version="11.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/propath.xsd">
+<propathentry env="all" kind="src" path="@{ROOT}\src\AppServer" platform="All"/>
 <propathentry env="all" kind="src" output="@{ROOT}\bin" path="@{ROOT}\src" platform="All"/>
 <propathentry env="all" kind="src" output="@{ROOT}\bin" path="@{ROOT}\dlc-src" platform="All"/>
-<propathentry env="all" kind="src" output="@{ROOT}\bin" path="@{ROOT}" platform="All"/>
-<propathentry env="all" kind="lib" path="@{DLC}\src\OpenEdge.BusinessLogic.pl" platform="Windows"/>
+<propathentry env="all" excluding="@{ROOT}/.mobileapps¦@{ROOT}/RESTContent¦@{ROOT}/WebContent" kind="src" output="@{ROOT}\bin" path="@{ROOT}" platform="All"/>
 <propathentry env="all" kind="lib" path="@{DLC}\gui\netlib\OpenEdge.Net.pl" platform="Windows"/>
+<propathentry env="all" kind="lib" path="@{DLC}\gui\rules\OpenEdge.BusinessRules.pl" platform="Windows"/>
 <propathentry env="all" kind="dir" path="@{ROOT}\dlc-src" platform="All"/>
+<propathentry env="all" kind="dir" path="@{WORK}" platform="All"/>
 <propathentry env="gui" kind="con" path="com.openedge.pdt.text.GUI_LIBRARIES" platform="All"/>
 <propathentry env="all" kind="con" path="com.openedge.pdt.text.DLC_PATHS" platform="All"/>
+<propathentry env="tty" kind="con" path="com.openedge.pdt.text.TTY_LIBRARIES" platform="All"/>
+<propathentry env="web" kind="con" path="com.openedge.pdt.text.WEB_LIBRARIES" platform="All"/>
 </propath>

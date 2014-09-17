@@ -16,12 +16,13 @@ define private temp-table eDelivery no-undo before-table bDelivery
     field RouteCode     as character
     field DriverCode    as character
     field VehicleCode   as character
-    field StartTime     as datetime-tz  
+    field StartTime     as datetime-tz
     field EndTime       as datetime-tz
     
     index idx1 as primary unique Code
     index idx2                   DriverCode StartTime
-    index idx3 as unique DepotCode DriverCode RouteCode VehicleCode StartTime EndTime
+    index idx3 as unique         DepotCode DriverCode RouteCode VehicleCode StartTime EndTime
+    index idx4                   RouteCode
     .
 
 define private temp-table eDeliveryItem no-undo  before-table bDeliveryItem

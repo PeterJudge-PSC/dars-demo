@@ -1,0 +1,459 @@
+ADD TABLE "CustomerDetail"
+  AREA "Data Area"
+  DUMP-NAME "customerdetail"
+
+ADD FIELD "CustNum" OF "CustomerDetail" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 2
+  MAX-WIDTH 4
+  ORDER 10
+
+ADD FIELD "Name" OF "CustomerDetail" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "ContactNumber" OF "CustomerDetail" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 16
+  ORDER 30
+
+ADD FIELD "Location" OF "CustomerDetail" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 5
+  MAX-WIDTH 16
+  ORDER 40
+
+ADD INDEX "idx1" ON "CustomerDetail" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CustNum" ASCENDING 
+
+ADD TABLE "Delivery"
+  AREA "Data Area"
+  DUMP-NAME "delivery"
+
+ADD FIELD "Code" OF "Delivery" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "DepotCode" OF "Delivery" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "RouteCode" OF "Delivery" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 16
+  ORDER 30
+
+ADD FIELD "DriverCode" OF "Delivery" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 5
+  MAX-WIDTH 16
+  ORDER 40
+
+ADD FIELD "VehicleCode" OF "Delivery" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 6
+  MAX-WIDTH 16
+  ORDER 50
+
+ADD FIELD "StartTime" OF "Delivery" AS datetime-tz 
+  FORMAT "99/99/9999 HH:MM:SS.SSS+HH:MM"
+  INITIAL ?
+  POSITION 7
+  MAX-WIDTH 12
+  ORDER 60
+
+ADD FIELD "EndTime" OF "Delivery" AS datetime-tz 
+  FORMAT "99/99/9999 HH:MM:SS.SSS+HH:MM"
+  INITIAL ?
+  POSITION 8
+  MAX-WIDTH 12
+  ORDER 70
+
+ADD INDEX "idx1" ON "Delivery" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Code" ASCENDING 
+
+ADD INDEX "idx2" ON "Delivery" 
+  AREA "Index Area"
+  INDEX-FIELD "Code" ASCENDING 
+  INDEX-FIELD "StartTime" ASCENDING 
+
+ADD INDEX "idx3" ON "Delivery" 
+  AREA "Index Area"
+  UNIQUE
+  INDEX-FIELD "DepotCode" ASCENDING 
+  INDEX-FIELD "DriverCode" ASCENDING 
+  INDEX-FIELD "RouteCode" ASCENDING 
+  INDEX-FIELD "VehicleCode" ASCENDING 
+  INDEX-FIELD "StartTime" ASCENDING 
+  INDEX-FIELD "EndTime" ASCENDING 
+
+ADD TABLE "DeliveryItem"
+  AREA "Data Area"
+  DUMP-NAME "deliveryitem"
+
+ADD FIELD "Code" OF "DeliveryItem" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "DeliveryCode" OF "DeliveryItem" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "OrderCode" OF "DeliveryItem" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 16
+  ORDER 30
+
+ADD FIELD "DeliveryStatus" OF "DeliveryItem" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 5
+  MAX-WIDTH 16
+  ORDER 40
+
+ADD FIELD "DeliveredAt" OF "DeliveryItem" AS datetime-tz 
+  FORMAT "99/99/9999 HH:MM:SS.SSS+HH:MM"
+  INITIAL ?
+  POSITION 6
+  MAX-WIDTH 12
+  ORDER 50
+
+ADD FIELD "Comments" OF "DeliveryItem" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 7
+  MAX-WIDTH 16
+  ORDER 60
+
+ADD FIELD "ProofOfDelivery" OF "DeliveryItem" AS blob 
+  FORMAT "x(8)"
+  INITIAL ?
+  POSITION 8
+  LOB-AREA "Data Area"
+  LOB-BYTES 104857600
+  LOB-SIZE 100M
+  ORDER 70
+
+ADD INDEX "idx1" ON "DeliveryItem" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Code" ASCENDING 
+
+ADD INDEX "idx2" ON "DeliveryItem" 
+  AREA "Index Area"
+  UNIQUE
+  INDEX-FIELD "DeliveryCode" ASCENDING 
+  INDEX-FIELD "OrderCode" ASCENDING 
+
+ADD TABLE "Depot"
+  AREA "Data Area"
+  DUMP-NAME "depot"
+
+ADD FIELD "Code" OF "Depot" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "Location" OF "Depot" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD INDEX "idx1" ON "Depot" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Code" ASCENDING 
+
+ADD TABLE "Driver"
+  AREA "Data Area"
+  DUMP-NAME "driver"
+
+ADD FIELD "Code" OF "Driver" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "DepotCode" OF "Driver" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "Name" OF "Driver" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 16
+  ORDER 30
+
+ADD FIELD "ShiftStart" OF "Driver" AS datetime-tz 
+  FORMAT "99/99/9999 HH:MM:SS.SSS+HH:MM"
+  INITIAL ?
+  POSITION 5
+  MAX-WIDTH 12
+  ORDER 40
+
+ADD INDEX "idx1" ON "Driver" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "DepotCode" ASCENDING 
+  INDEX-FIELD "Code" ASCENDING 
+
+ADD INDEX "idx2" ON "Driver" 
+  AREA "Index Area"
+  INDEX-FIELD "ShiftStart" ASCENDING 
+
+ADD TABLE "Order"
+  AREA "Data Area"
+  DUMP-NAME "order"
+
+ADD FIELD "Code" OF "Order" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "CustNum" OF "Order" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 3
+  MAX-WIDTH 4
+  ORDER 20
+
+ADD FIELD "OrderNum" OF "Order" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 4
+  MAX-WIDTH 4
+  ORDER 30
+
+ADD FIELD "OrderDate" OF "Order" AS datetime-tz 
+  FORMAT "99/99/9999 HH:MM:SS.SSS+HH:MM"
+  INITIAL ?
+  POSITION 5
+  MAX-WIDTH 12
+  ORDER 40
+
+ADD FIELD "OrderAmt" OF "Order" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  POSITION 6
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 50
+
+ADD FIELD "Instructions" OF "Order" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 7
+  MAX-WIDTH 16
+  ORDER 60
+
+ADD FIELD "OrderStatus" OF "Order" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 8
+  MAX-WIDTH 16
+  ORDER 70
+
+ADD FIELD "ReturnCode" OF "Order" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 9
+  MAX-WIDTH 16
+  ORDER 80
+
+ADD FIELD "ReturnReason" OF "Order" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 10
+  MAX-WIDTH 16
+  ORDER 90
+
+ADD FIELD "DeliveryCode" OF "Order" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 11
+  MAX-WIDTH 16
+  ORDER 100
+
+ADD INDEX "idx1" ON "Order" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Code" ASCENDING 
+
+ADD INDEX "idx2" ON "Order" 
+  AREA "Index Area"
+  UNIQUE
+  INDEX-FIELD "CustNum" ASCENDING 
+  INDEX-FIELD "OrderNum" ASCENDING 
+
+ADD INDEX "idx3" ON "Order" 
+  AREA "Index Area"
+  INDEX-FIELD "OrderStatus" ASCENDING 
+
+ADD INDEX "idx4" ON "Order" 
+  AREA "Index Area"
+  INDEX-FIELD "ReturnCode" ASCENDING 
+
+ADD TABLE "OrderLine"
+  AREA "Data Area"
+  DUMP-NAME "orderline"
+
+ADD FIELD "OrderCode" OF "OrderLine" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "LineNum" OF "OrderLine" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 3
+  MAX-WIDTH 4
+  ORDER 20
+
+ADD FIELD "ItemCode" OF "OrderLine" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 16
+  ORDER 30
+
+ADD FIELD "Qty" OF "OrderLine" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 5
+  MAX-WIDTH 4
+  ORDER 40
+
+ADD FIELD "Volume" OF "OrderLine" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  POSITION 6
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 50
+
+ADD INDEX "idx1" ON "OrderLine" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "OrderCode" ASCENDING 
+  INDEX-FIELD "LineNum" ASCENDING 
+
+ADD TABLE "Route"
+  AREA "Data Area"
+  DUMP-NAME "route"
+
+ADD FIELD "Code" OF "Route" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "DepotCode" OF "Route" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "Distance" OF "Route" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  POSITION 4
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 30
+
+ADD INDEX "idx1" ON "Route" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "DepotCode" ASCENDING 
+  INDEX-FIELD "Code" ASCENDING 
+
+ADD TABLE "VehicleType"
+  AREA "Data Area"
+  DUMP-NAME "vehicletype"
+
+ADD FIELD "Code" OF "VehicleType" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "Capacity" OF "VehicleType" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  POSITION 3
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 20
+
+ADD FIELD "Range" OF "VehicleType" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  POSITION 4
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 30
+
+ADD INDEX "idx1" ON "VehicleType" 
+  AREA "Index Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Code" ASCENDING 
+
+.
+PSC
+cpstream=UTF-8
+.
+0000008654

@@ -12,10 +12,10 @@
   ----------------------------------------------------------------------*/
 block-level on error undo, throw.
 
-using OpenEdge.Demo.DeliveryAndReturnService.
+using TripleDee.Shopping.DeliveryAndReturnService.
 using Progress.Json.ObjectModel.JsonObject.
-using OpenEdge.Demo.OrderEntity.
-using OpenEdge.Demo.OrderStatusEnum.
+using TripleDee.Shopping.OrderEntity.
+using TripleDee.Shopping.OrderStatusEnum.
 using Progress.Json.ObjectModel.JsonArray.
 
 /* ***************************  Main Block  *************************** */

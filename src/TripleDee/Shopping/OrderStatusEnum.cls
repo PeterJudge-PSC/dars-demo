@@ -1,3 +1,4 @@
+@openapi.openedge.export FILE(type="BPM", operationName="%FILENAME%", useReturnValue="false", writeDataSetBeforeImage="false", executionMode="singleton").
 /*------------------------------------------------------------------------
     File        : OrderStatusEnum
     Purpose     : 
@@ -10,9 +11,9 @@
 block-level on error undo, throw.
 
 using OpenEdge.Core.EnumMember.
-using OpenEdge.Demo.OrderStatusEnum.
+using TripleDee.Shopping.OrderStatusEnum.
 
-class OpenEdge.Demo.OrderStatusEnum inherits EnumMember:
+class TripleDee.Shopping.OrderStatusEnum inherits EnumMember:
     {Consultingwerk/EnumMember.i Ordered           1 OrderStatusEnum}
     {Consultingwerk/EnumMember.i Delivered         2 OrderStatusEnum}
     {Consultingwerk/EnumMember.i ReturnRequested   3 OrderStatusEnum}
@@ -26,6 +27,6 @@ class OpenEdge.Demo.OrderStatusEnum inherits EnumMember:
         super (input piValue, input pcName).
     end constructor.
     
-    {Consultingwerk/EnumFromString.i OpenEdge.Demo.OrderStatusEnum}
+    {Consultingwerk/EnumFromString.i TripleDee.Shopping.OrderStatusEnum}
     
 end class.

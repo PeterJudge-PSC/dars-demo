@@ -1,3 +1,4 @@
+@openapi.openedge.export FILE(type="BPM", operationName="%FILENAME%", useReturnValue="false", writeDataSetBeforeImage="false", executionMode="singleton").
 /*------------------------------------------------------------------------
     File        : LocationService
     Purpose     : 
@@ -9,11 +10,10 @@
   ----------------------------------------------------------------------*/
 block-level on error undo, throw.
 
-using OpenEdge.Demo.BusinessEntity.
+using TripleDee.Shopping.BusinessEntity.
 
-class OpenEdge.Demo.LocationService inherits BusinessEntity:
-/*    {OpenEdge/Demo/delivery_database.i}*/
-    {OpenEdge/Demo/location_dataset.i}
+class TripleDee.Shopping.LocationService inherits BusinessEntity:
+    {TripleDee/Shopping/location_dataset.i}
 
     method public void FindRouteForDelivery(input pcDeliveryCode as character,
                                             output table eRoute):

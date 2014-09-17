@@ -13,13 +13,13 @@
   define private temp-table eVehicle no-undo
         field Code     as character
         field Capacity as decimal      /* cubic meters */
-        field Range    as integer      /* KM */
+        field Range    as decimal      /* KM */
         .        
   
   define private temp-table eRoute no-undo
-    field DepotCode     as character
-    field RouteCode       as character
-    field Distance      as decimal
-    index idx1 as primary unique DepotCode RouteCode
+    field Code        as character
+    field DepotCode   as character
+    field Range       as decimal
+    index idx1 as primary unique DepotCode Code
     .
   
