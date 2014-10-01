@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:DataStructure xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns2="urn:/progress/openedge/businessrules/v1">
+    <ns2:table name="eOrder">
+        <ns2:fields>
+            <ns2:field name="Code" type="xs:string"/>
+            <ns2:field name="CustNum" type="xs:int"/>
+            <ns2:field name="OrderNum" type="xs:int"/>
+            <ns2:field name="OrderDate" type="xs:dateTime"/>
+            <ns2:field name="OrderAmt" type="xs:decimal"/>
+            <ns2:field name="Instructions" type="xs:string"/>
+            <ns2:field name="OrderStatus" type="xs:string"/>
+            <ns2:field name="ReturnCode" type="xs:string"/>
+            <ns2:field name="ReturnReason" type="xs:string"/>
+        </ns2:fields>
+        <ns2:filePath>C:/devarea/github/dars-demo/src/TripleDee/Shopping/order_dataset.i</ns2:filePath>
+    </ns2:table>
+</ns2:DataStructure>

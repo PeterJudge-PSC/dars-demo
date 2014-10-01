@@ -1,4 +1,3 @@
-@openapi.openedge.export FILE(type="BPM", operationName="%FILENAME%", useReturnValue="false", writeDataSetBeforeImage="false", executionMode="singleton").
 /*------------------------------------------------------------------------
     File        : LocationService
     Purpose     : 
@@ -10,36 +9,10 @@
   ----------------------------------------------------------------------*/
 block-level on error undo, throw.
 
-using TripleDee.Shopping.BusinessEntity.
+class TripleDee.Shopping.LocationService:
+    {TripleDee/Shopping/location_dataset.i &access-level=private}
 
-class TripleDee.Shopping.LocationService inherits BusinessEntity:
-    {TripleDee/Shopping/location_dataset.i}
-
-    method public void FindRouteForDelivery(input pcDeliveryCode as character,
-                                            output table eRoute):
-        /* clearly not real. use fiund a random route */
-        FindRouteForLocation(pcDeliveryCode, output table eRoute by-reference).
-    end method.
-    
-    method public void FindRouteForLocation(input pcLocation as character,
-                                            output table eRoute):
-        define query qryRoute for Route scrolling.
-        
-        open query qryRoute preselect each Route.
-        query qryRoute:reposition-to-row(random(1, query qryRoute:num-results)).
-        query qryRoute:get-next().
-        
-        empty temp-table eRoute.
-        create eRoute.
-        buffer-copy Route to eRoute.
-        
-        finally:
-            close query qryRoute.
-        end finally.
-    end method.
-    
-    method public void AllocateAvailableVehicle(input pcDepot as character,
-                                                output table eVehicle):
+    method public void AllocateAvailableVehicle(output table eVehicle):
         define query qryVehicle for VehicleType scrolling.
         
         open query qryVehicle preselect each VehicleType.
@@ -54,11 +27,8 @@ class TripleDee.Shopping.LocationService inherits BusinessEntity:
             close query qryVehicle.
         end finally.
     end method.
-    
 		
 	constructor public LocationService ():
-		super (input ?).
 	end constructor.
-
-
+	
 end class.

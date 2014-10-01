@@ -47,20 +47,6 @@ ADD FIELD "Code" OF "Delivery" AS character
   MAX-WIDTH 16
   ORDER 10
 
-ADD FIELD "DepotCode" OF "Delivery" AS character 
-  FORMAT "x(8)"
-  INITIAL ""
-  POSITION 3
-  MAX-WIDTH 16
-  ORDER 20
-
-ADD FIELD "RouteCode" OF "Delivery" AS character 
-  FORMAT "x(8)"
-  INITIAL ""
-  POSITION 4
-  MAX-WIDTH 16
-  ORDER 30
-
 ADD FIELD "DriverCode" OF "Delivery" AS character 
   FORMAT "x(8)"
   INITIAL ""
@@ -89,6 +75,13 @@ ADD FIELD "EndTime" OF "Delivery" AS datetime-tz
   MAX-WIDTH 12
   ORDER 70
 
+ADD FIELD "DeliveryStatus" OF "Delivery" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 9
+  MAX-WIDTH 16
+  ORDER 80
+
 ADD INDEX "idx1" ON "Delivery" 
   AREA "Index Area"
   UNIQUE
@@ -97,18 +90,7 @@ ADD INDEX "idx1" ON "Delivery"
 
 ADD INDEX "idx2" ON "Delivery" 
   AREA "Index Area"
-  INDEX-FIELD "Code" ASCENDING 
-  INDEX-FIELD "StartTime" ASCENDING 
-
-ADD INDEX "idx3" ON "Delivery" 
-  AREA "Index Area"
-  UNIQUE
-  INDEX-FIELD "DepotCode" ASCENDING 
-  INDEX-FIELD "DriverCode" ASCENDING 
-  INDEX-FIELD "RouteCode" ASCENDING 
-  INDEX-FIELD "VehicleCode" ASCENDING 
-  INDEX-FIELD "StartTime" ASCENDING 
-  INDEX-FIELD "EndTime" ASCENDING 
+  INDEX-FIELD "DeliveryStatus" ASCENDING 
 
 ADD TABLE "DeliveryItem"
   AREA "Data Area"
@@ -156,14 +138,26 @@ ADD FIELD "Comments" OF "DeliveryItem" AS character
   MAX-WIDTH 16
   ORDER 60
 
-ADD FIELD "ProofOfDelivery" OF "DeliveryItem" AS blob 
+ADD FIELD "Location" OF "DeliveryItem" AS character 
   FORMAT "x(8)"
-  INITIAL ?
-  POSITION 8
-  LOB-AREA "Data Area"
-  LOB-BYTES 104857600
-  LOB-SIZE 100M
-  ORDER 70
+  INITIAL ""
+  POSITION 10
+  MAX-WIDTH 16
+  ORDER 90
+
+ADD FIELD "ContactName" OF "DeliveryItem" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 11
+  MAX-WIDTH 16
+  ORDER 100
+
+ADD FIELD "ContactNumber" OF "DeliveryItem" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 12
+  MAX-WIDTH 16
+  ORDER 110
 
 ADD INDEX "idx1" ON "DeliveryItem" 
   AREA "Index Area"
@@ -173,33 +167,7 @@ ADD INDEX "idx1" ON "DeliveryItem"
 
 ADD INDEX "idx2" ON "DeliveryItem" 
   AREA "Index Area"
-  UNIQUE
-  INDEX-FIELD "DeliveryCode" ASCENDING 
   INDEX-FIELD "OrderCode" ASCENDING 
-
-ADD TABLE "Depot"
-  AREA "Data Area"
-  DUMP-NAME "depot"
-
-ADD FIELD "Code" OF "Depot" AS character 
-  FORMAT "x(8)"
-  INITIAL ""
-  POSITION 2
-  MAX-WIDTH 16
-  ORDER 10
-
-ADD FIELD "Location" OF "Depot" AS character 
-  FORMAT "x(8)"
-  INITIAL ""
-  POSITION 3
-  MAX-WIDTH 16
-  ORDER 20
-
-ADD INDEX "idx1" ON "Depot" 
-  AREA "Index Area"
-  UNIQUE
-  PRIMARY
-  INDEX-FIELD "Code" ASCENDING 
 
 ADD TABLE "Driver"
   AREA "Data Area"
@@ -211,13 +179,6 @@ ADD FIELD "Code" OF "Driver" AS character
   POSITION 2
   MAX-WIDTH 16
   ORDER 10
-
-ADD FIELD "DepotCode" OF "Driver" AS character 
-  FORMAT "x(8)"
-  INITIAL ""
-  POSITION 3
-  MAX-WIDTH 16
-  ORDER 20
 
 ADD FIELD "Name" OF "Driver" AS character 
   FORMAT "x(8)"
@@ -235,9 +196,7 @@ ADD FIELD "ShiftStart" OF "Driver" AS datetime-tz
 
 ADD INDEX "idx1" ON "Driver" 
   AREA "Index Area"
-  UNIQUE
   PRIMARY
-  INDEX-FIELD "DepotCode" ASCENDING 
   INDEX-FIELD "Code" ASCENDING 
 
 ADD INDEX "idx2" ON "Driver" 
@@ -386,38 +345,34 @@ ADD INDEX "idx1" ON "OrderLine"
   INDEX-FIELD "OrderCode" ASCENDING 
   INDEX-FIELD "LineNum" ASCENDING 
 
-ADD TABLE "Route"
+ADD TABLE "ProofOfDelivery"
   AREA "Data Area"
-  DUMP-NAME "route"
+  DUMP-NAME "pod"
 
-ADD FIELD "Code" OF "Route" AS character 
+ADD FIELD "DeliveryItemCode" OF "ProofOfDelivery" AS character 
   FORMAT "x(8)"
   INITIAL ""
   POSITION 2
   MAX-WIDTH 16
   ORDER 10
 
-ADD FIELD "DepotCode" OF "Route" AS character 
+ADD FIELD "POD" OF "ProofOfDelivery" AS clob 
   FORMAT "x(8)"
-  INITIAL ""
+  INITIAL ?
   POSITION 3
-  MAX-WIDTH 16
+  LOB-AREA "Data Area"
+  LOB-BYTES 524288000
+  LOB-SIZE 500M
+  CLOB-CODEPAGE "iso8859-1"
+  CLOB-COLLATION "basic"
+  CLOB-TYPE 1
   ORDER 20
 
-ADD FIELD "Distance" OF "Route" AS decimal 
-  FORMAT "->>,>>9.99"
-  INITIAL "0"
-  POSITION 4
-  MAX-WIDTH 17
-  DECIMALS 2
-  ORDER 30
-
-ADD INDEX "idx1" ON "Route" 
+ADD INDEX "idx1" ON "ProofOfDelivery" 
   AREA "Index Area"
   UNIQUE
   PRIMARY
-  INDEX-FIELD "DepotCode" ASCENDING 
-  INDEX-FIELD "Code" ASCENDING 
+  INDEX-FIELD "DeliveryItemCode" ASCENDING 
 
 ADD TABLE "VehicleType"
   AREA "Data Area"
@@ -456,4 +411,4 @@ ADD INDEX "idx1" ON "VehicleType"
 PSC
 cpstream=UTF-8
 .
-0000008654
+0000007789

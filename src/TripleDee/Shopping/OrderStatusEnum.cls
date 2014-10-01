@@ -1,4 +1,3 @@
-@openapi.openedge.export FILE(type="BPM", operationName="%FILENAME%", useReturnValue="false", writeDataSetBeforeImage="false", executionMode="singleton").
 /*------------------------------------------------------------------------
     File        : OrderStatusEnum
     Purpose     : 
@@ -22,6 +21,7 @@ class TripleDee.Shopping.OrderStatusEnum inherits EnumMember:
     {Consultingwerk/EnumMember.i ReturnReceived    6 OrderStatusEnum}
     {Consultingwerk/EnumMember.i Refunded          7 OrderStatusEnum}
     {Consultingwerk/EnumMember.i OutForDelivery    8 OrderStatusEnum}
+    {Consultingwerk/EnumMember.i PickupScheduled   9 OrderStatusEnum}
     
     constructor protected OrderStatusEnum ( input piValue as integer, input pcName as character ):
         super (input piValue, input pcName).

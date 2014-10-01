@@ -10,7 +10,7 @@
     Created     : Wed Aug 06 10:07:15 EDT 2014
     Notes       :
   ----------------------------------------------------------------------*/
-define private temp-table eCustomerDetail no-undo
+define {&access-level}  temp-table eCustomerDetail no-undo
     field CustNum       as integer
     field Name          as character
     field ContactNumber as character
@@ -18,7 +18,7 @@ define private temp-table eCustomerDetail no-undo
     /* other real-world fields */
     index idx1 as primary unique CustNum. 
 
-define private temp-table eOrder no-undo
+define {&access-level}  temp-table eOrder no-undo before-table bOrder
     field Code            as character
     field CustNum         as integer
     field OrderNum        as integer
@@ -28,7 +28,6 @@ define private temp-table eOrder no-undo
     field OrderStatus     as character      /* matches OrderStatusEnum */
     field ReturnCode      as character
     field ReturnReason    as character
-    field DeliveryCode    as character
     /* other real-world fields */
     index idx1 as primary unique Code
     index idx2 as unique CustNum OrderNum
@@ -36,7 +35,7 @@ define private temp-table eOrder no-undo
     index idx4 ReturnCode
     .
 
-define private temp-table eOrderLine no-undo
+define {&access-level}  temp-table eOrderLine no-undo before-table bOrderLine
     field OrderCode       as character
     field LineNum         as integer
     field ItemCode        as character
@@ -45,8 +44,8 @@ define private temp-table eOrderLine no-undo
     /* other real-world fields */
     index idx1 as primary unique OrderCode LineNum.
  
-define private dataset dsOrder for eOrder, eOrderLine, eCustomerDetail
+define {&access-level}  dataset dsOrder for eOrder, eOrderLine, eCustomerDetail
     data-relation for eOrder,eOrderLine relation-fields(Code, OrderCode) nested
     data-relation for eOrder,eCustomerDetail relation-fields(CustNum, CustNum) nested
     .
-    
+/* eof */

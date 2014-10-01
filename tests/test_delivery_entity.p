@@ -22,9 +22,19 @@ define variable cDelivery as character no-undo.
 
 cDepot = 'DEP100'.
 cDriver = 'DRV100'.
-cDelivery = '53e25e100c533392e01c880a'.
+cDelivery = 'cdf6087e-7b4a-0295-eb13-ba3cd83afefd'.
+cDelivery = 'ed26387e-424b-1a94-eb13-b83cd86e8ce3'.
+cDelivery = 'e6e49dea-de3a-40b7-eb13-6d3cd0370b13'.
+cDelivery = 'faf0dd5b-310e-0d81-eb13-d73c5892a706'.
+cDelivery = '8b9385e0-d025-829f-eb13-e93c18c8832c'.
 
 oBE = new DeliveryEntity().
+
+oBE:GetDeliveryByCode(cDelivery, output dataset-handle hDataset).
+hDataset:write-json('file', 'temp/del01.json', true).
+
+
+
 
 oFilter = new JsonObject().
 oFilter:Add('driverCode', cDriver).
@@ -40,7 +50,6 @@ oObject:Add('ablFilter', oFilter).
 
 define variable cWhere as character extent no-undo.
 
-cWhere = oBE:DBG_BuildQuery(oObject).
 
 message 
 'cWhere[1]=' cWhere[1] skip

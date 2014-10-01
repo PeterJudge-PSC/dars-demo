@@ -39,6 +39,7 @@ repeat:
 end.
 input close.
 
+/* Florida for Exchange */
 open query qryAddress preselect each ttAddressData where ttAddressData.state eq 'FL'.
 
 for each CustomerDetail:
@@ -49,7 +50,15 @@ for each CustomerDetail:
                 + ttAddressData.city + ', '
                 + ttAddressData.state + ' '
                 + ttAddressData.zip.     
-end.
-    
 
+    for each Order where
+             Order.CustNum eq CustomerDetail.CustNum
+             no-lock,
+        each DeliveryItem where
+             DeliveryItem.OrderCode eq Order.Code:
+        DeliveryItem.Location = CustomerDetail.Location.
+        DeliveryItem.ContactName = CustomerDetail.Name.
+        DeliveryItem.ContactNumber = CustomerDetail.ContactNumber.
+    end.
+end.
 

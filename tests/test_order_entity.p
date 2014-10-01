@@ -12,7 +12,6 @@
   ----------------------------------------------------------------------*/
 block-level on error undo, throw.
 
-using TripleDee.Shopping.DeliveryAndReturnService.
 using Progress.Json.ObjectModel.JsonObject.
 using TripleDee.Shopping.OrderEntity.
 using TripleDee.Shopping.OrderStatusEnum.
